@@ -5,7 +5,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"io"
-	"log"
 	"net/http"
 	"os"
 )
@@ -47,7 +46,6 @@ func (h *HTTPWriteSyncer) Write(p []byte) (n int, err error) {
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
 	}(resp.Body)
-	log.Println(resp.StatusCode)
 	return resp.StatusCode, nil
 }
 func (h *HTTPWriteSyncer) Sync() error {
@@ -58,10 +56,10 @@ func New(apiKey string, project string, level zapcore.Level) *Client {
 
 	client := &Client{}
 
-	client.SetHost(host)
 	client.SetProject(project)
 	client.SetApiKey(apiKey)
 	client.SetLevel(level)
+	client.SetHost(host)
 
 	return client
 }
@@ -70,10 +68,10 @@ func NewWithModule(apiKey string, project string, level zapcore.Level, module st
 
 	client := &Client{}
 
-	client.SetHost(host)
 	client.SetProject(project)
 	client.SetApiKey(apiKey)
 	client.SetLevel(level)
+	client.SetHost(host)
 
 	client.With(zap.String("module", module))
 
