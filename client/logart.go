@@ -64,6 +64,20 @@ func New(apiKey string, project string, level zapcore.Level) *Client {
 	return client
 }
 
+func NewWithModule(apiKey string, project string, level zapcore.Level, module string) *Client {
+
+	client := &Client{}
+
+	client.SetHost(host)
+	client.SetProject(project)
+	client.SetApiKey(apiKey)
+	client.SetLevel(level)
+
+	client.With(zap.String("module", module))
+
+	return client
+}
+
 func (c *Client) Project() string {
 	return c.project
 }
