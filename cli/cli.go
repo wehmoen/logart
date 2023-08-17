@@ -14,6 +14,7 @@ const (
 
 func main() {
 	username := flag.String("username", "", "Username")
+	flag.Parse()
 	if *username == "" {
 		log.Fatalf("Username is required via --username")
 	}
