@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	c := client.New("6023771e-e97e-480d-885b-b1f2c3de421f", "client_test", zapcore.DebugLevel)
+	c := client.New("6fd46d9f-078c-47c1-8c9c-677f2c166a1b", "client_test", zapcore.DebugLevel)
 	c.Info("Hello World!")
 	c.Warn("This is a warning!")
 }

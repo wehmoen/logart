@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"github.com/labstack/echo/v4"
+	middleware2 "github.com/labstack/echo/v4/middleware"
 	"github.com/wehmoen/logart/database"
 	"github.com/wehmoen/logart/middleware"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -33,6 +34,7 @@ func NewLogart(dbUri string) (*Logart, error) {
 	e.Use(db.Inject())
 
 	e.Use(middleware.ValidateRequest())
+	e.Use(middleware2.Logger())
 
 	l := &Logart{e: e}
 

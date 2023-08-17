@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"io"
+	"log"
 	"net/http"
 	"os"
 )
@@ -46,7 +47,7 @@ func (h *HTTPWriteSyncer) Write(p []byte) (n int, err error) {
 	defer func(Body io.ReadCloser) {
 		_ = Body.Close()
 	}(resp.Body)
-
+	log.Println(resp.StatusCode)
 	return resp.StatusCode, nil
 }
 func (h *HTTPWriteSyncer) Sync() error {
