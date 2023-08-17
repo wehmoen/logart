@@ -13,10 +13,11 @@ const host = "https://api.logart.app"
 
 type Client struct {
 	*zap.Logger
-	apiKey  string
-	host    string
-	project string
-	level   zapcore.Level
+	clientLogger *zap.Logger
+	apiKey       string
+	host         string
+	project      string
+	level        zapcore.Level
 }
 
 type HTTPWriteSyncer struct {
@@ -78,6 +79,10 @@ func NewWithModule(apiKey string, project string, level zapcore.Level, module st
 	return client
 }
 
+func (c *Client) Local() *zap.Logger {
+	return c.clientLogger
+}
+
 func (c *Client) Project() string {
 	return c.project
 }
@@ -103,6 +108,8 @@ func (c *Client) SetHost(host string) {
 
 	// Console core
 	consoleCore := zapcore.NewCore(jsonEncoder, zapcore.AddSync(zapcore.Lock(os.Stdout)), c.level)
+
+	c.clientLogger = zap.New(consoleCore, zap.AddCaller())
 
 	// Combine cores
 	combinedCore := zapcore.NewTee(httpCore, consoleCore)
