@@ -34,7 +34,7 @@ func ValidateRequest() echo.MiddlewareFunc {
 			user, err := db.UserByApiKey(apiKey)
 
 			if err != nil {
-				log.Printf("Could not get user by api key: %s", err.Error())
+				log.Printf("Could not get user by api key (%s): %s", apiKey, err.Error())
 				return echo.ErrUnauthorized
 			}
 
