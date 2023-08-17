@@ -25,6 +25,7 @@ func NewLogart(dbUri string) (*Logart, error) {
 	e.HidePort = true
 	e.HideBanner = true
 
+	log.Printf("Connection to database %s via %s", "logart", dbUri)
 	db, err := database.Open(dbUri, "logart")
 
 	if err != nil {
