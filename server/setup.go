@@ -33,8 +33,8 @@ func NewLogart(dbUri string) (*Logart, error) {
 
 	e.Use(db.Inject())
 
-	e.Use(middleware.ValidateRequest())
 	e.Use(middleware2.Logger())
+	e.Use(middleware.ValidateRequest())
 
 	l := &Logart{e: e}
 
