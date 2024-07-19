@@ -93,7 +93,7 @@ func (l *Logart) findLogsInTimeRange() echo.HandlerFunc {
 		cursor, err := collection.Find(c.Request().Context(), map[string]interface{}{
 			"user_id": user.ID,
 			"project": project,
-			"createdAt": map[string]interface{}{
+			"created_at": map[string]interface{}{
 				"$gte": primitive.NewDateTimeFromTime(fromTime),
 				"$lte": primitive.NewDateTimeFromTime(toTime),
 			},
