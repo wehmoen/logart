@@ -118,7 +118,18 @@ func (l *Logart) findLogsInTimeRange() echo.HandlerFunc {
 			events = append(events, event)
 		}
 
-		return c.JSON(http.StatusOK, events)
+		if events == nil {
+			events = []database.Event{}
+		}
+
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"total": len(events),
+			"query": map[string]interface{}{
+				from: from,
+				to:   to,
+			},
+			"results": events,
+		})
 	}
 }
 
