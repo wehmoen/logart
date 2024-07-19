@@ -105,8 +105,17 @@ func (l *Logart) findLogsInTimeRange() echo.HandlerFunc {
 
 		var events []database.Event
 
-		if err := cursor.All(c.Request().Context(), &events); err != nil {
-			return c.NoContent(http.StatusInternalServerError)
+		for {
+			if !cursor.Next(c.Request().Context()) {
+				break
+			}
+
+			var event database.Event
+			if err := cursor.Decode(&event); err != nil {
+				return c.NoContent(http.StatusInternalServerError)
+			}
+
+			events = append(events, event)
 		}
 
 		return c.JSON(http.StatusOK, events)
