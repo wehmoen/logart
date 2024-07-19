@@ -19,7 +19,7 @@ func ValidateRequest() echo.MiddlewareFunc {
 				return echo.ErrMethodNotAllowed
 			}
 
-			if c.Path() != "/log" {
+			if c.Path() != "/log" && c.Path() != "/get" {
 				log.Printf("Path %s not allowed", c.Path())
 				return echo.ErrBadRequest
 			}

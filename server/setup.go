@@ -40,8 +40,77 @@ func NewLogart(dbUri string) (*Logart, error) {
 	l := &Logart{e: e}
 
 	e.POST("/log", l.handleLog())
+	e.POST("/get", l.findLogsInTimeRange())
 
 	return l, nil
+}
+
+func (l *Logart) findLogsInTimeRange() echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		from := c.QueryParam("from")
+		to := c.QueryParam("to")
+
+		if from == "" || to == "" {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		// Parse time
+		fromTime, err := time.Parse(time.RFC3339, from)
+		if err != nil {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		toTime, err := time.Parse(time.RFC3339, to)
+		if err != nil {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		if fromTime.After(toTime) {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		db := database.GetDatabaseFromContext(c)
+
+		if db == nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		user := database.GetUserFromContext(c)
+
+		if user == nil {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		project := c.Request().Header.Get(HeaderXProject)
+
+		if project == "" {
+			return c.NoContent(http.StatusBadRequest)
+		}
+
+		collection := db.DB.Collection("events")
+
+		cursor, err := collection.Find(c.Request().Context(), map[string]interface{}{
+			"userId":  user.ID,
+			"project": project,
+			"createdAt": map[string]interface{}{
+				"$gte": primitive.NewDateTimeFromTime(fromTime),
+				"$lte": primitive.NewDateTimeFromTime(toTime),
+			},
+		})
+
+		if err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		var events []database.Event
+
+		if err := cursor.All(c.Request().Context(), &events); err != nil {
+			return c.NoContent(http.StatusInternalServerError)
+		}
+
+		return c.JSON(http.StatusOK, events)
+	}
 }
 
 func (l *Logart) handleLog() echo.HandlerFunc {
@@ -109,5 +178,5 @@ func (l *Logart) isValidJSONData(data interface{}) bool {
 
 func (l *Logart) Start() {
 	log.Println("Starting server on port 8080")
-	l.e.Logger.Fatal(l.e.Start(":8080"))
+	l.e.Logger.Fatal(l.e.Start("127.0.0.1:8080"))
 }
